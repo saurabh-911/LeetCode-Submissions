@@ -1,42 +1,34 @@
-class Solution {
-    private int ans;
-    private Map<Integer, Integer> map;
+import java.util.HashMap;
+import java.util.Map;
 
-    Solution(){
-        ans = 0;
-        map = new HashMap<>();
-    }
+class Solution {
+    // Using a HashMap to store previously computed step results
+    private Map<Integer, Integer> dp = new HashMap<>();
 
     public int climbStairs(int n) {
-        solve(0, n);
-        return ans;
+        return fun(0, n);
     }
 
-    private void solve(int temp, int target){
-        if(temp > target) {
-                return;
-            }
-        if(temp == target){
-            ans += 1;
-            return;
+    private int fun(int i, int n) {
+        // Base case: if we overstep the target, this path yields 0 ways
+        if (i > n) return 0;
+        
+        // Base case: if we reach the target exactly, we found 1 valid path
+        if (i == n) return 1;
+
+        // Cache Check: If this step was already calculated, return its stored value
+        if (dp.containsKey(i)) {
+            return dp.get(i);
         }
 
-        if(map.containsKey(temp+1)) {
-            ans += map.get(temp+1);  
-        }else{
-        int prevAns = ans;
-        solve(temp + 1, target);
-        int paths = ans - prevAns; // total ans via solve(temp + 1, target); alone
-        map.put(temp+1, paths);
-        }
+        // Recursive Breakdown: Sum the paths available by taking 1 or 2 steps
+        int a1 = fun(i + 1, n);
+        int a2 = fun(i + 2, n);
+        int ans = a1 + a2;
 
-        if(map.containsKey(temp+2)) {
-            ans += map.get(temp+2);
-        }else{
-        int prevAns = ans;
-        solve(temp + 2, target);
-        int paths = ans - prevAns; // total ans via solve(temp + 2, target); alone
-        map.put(temp+2, paths);
-        }
+        // Memoization: Save the true calculated value before returning up the stack
+        dp.put(i, ans);
+
+        return ans;
     }
 }
